@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -500,7 +501,7 @@ function loadImage(file) {
   setStatus("Image loaded. Ready for background removal.", "success");
 }
 
-// Load AI library only when needed
+// Load the AI library
 async function loadAIEngine() {
 
   if(removeBackgroundAI) return removeBackgroundAI;
@@ -508,17 +509,36 @@ async function loadAIEngine() {
   setStatus("Loading the AI engine. Please wait…");
   $("backendStatus").textContent = "Downloading AI engine…";
 
-  const library = await import(
-    "https://esm.sh/@imgly/background-removal@1.7.0?bundle"
-  );
+  try {
 
-  removeBackgroundAI = library.default;
+    const library = await import(
+      "https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.7.0/+esm"
+    );
 
-  if(typeof removeBackgroundAI !== "function") {
-    throw new Error("The AI engine could not be initialized.");
+    const candidate = library.removeBackground;
+
+    if(typeof candidate !== "function") {
+      throw new Error(
+        "The AI library loaded, but its removeBackground function was not found."
+      );
+    }
+
+    removeBackgroundAI = candidate;
+
+    $("backendStatus").textContent = "AI library loaded · Ready";
+
+    return removeBackgroundAI;
+
+  } catch(error) {
+
+    console.error("AI library loading error:", error);
+
+    throw new Error(
+      "Could not load the AI library. Check your internet connection or try another browser. Details: " +
+      (error.message || "Unknown loading error")
+    );
+
   }
-
-  return removeBackgroundAI;
 }
 
 // Process image locally
@@ -529,9 +549,9 @@ async function removeBackgroundLocally(file) {
   const selectedModel = $("quality").value;
 
   const modelNames = {
-    small: "isnet_quint8",
-    medium: "isnet_fp16",
-    large: "isnet"
+    small: "small",
+    medium: "medium",
+    large: "large"
   };
 
   return await removeBackground(file, {
@@ -609,8 +629,7 @@ async function runBackgroundRemoval() {
     $("backendStatus").textContent = "AI engine · Error";
 
     setStatus(
-      (error && error.message ? error.message : "Could not process this image.") +
-      " Check your internet connection and try again.",
+      (error && error.message ? error.message : "Could not process this image."),
       "error"
     );
 
