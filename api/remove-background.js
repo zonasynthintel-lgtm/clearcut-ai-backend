@@ -1,20 +1,24 @@
 
 const Busboy = require("busboy");
 
+module.exports.config = {
+  api: {
+    bodyParser: false
+  }
+};
+
 module.exports = async function handler(req, res) {
-  // Temporary CORS setting for testing.
-  // Later, restrict this to your own website's origin.
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 
   if (req.method === "OPTIONS") {
-    return res.status(204).end();
+    return res.status(200).end();
   }
 
   if (req.method !== "POST") {
     return res.status(405).json({
-      error: "Only POST requests are allowed."
+      error: "Use POST to upload an image."
     });
   }
 
@@ -22,129 +26,156 @@ module.exports = async function handler(req, res) {
 
   if (!apiKey) {
     return res.status(500).json({
-      error: "Pixelcut API key is not configured on Vercel."
+      error: "Pixelcut API key is not configured."
     });
   }
 
   try {
-    const bb = Busboy({
-      headers: req.headers,
-      limits: {
-        files: 1,
-        fileSize: 4 * 1024 * 1024
+    const image = await new Promise((resolve, reject) => {
+      const bb = Busboy({
+        headers: req.headers,
+        limits: {
+          fileSize: 4 * 1024 * 1024,
+          files: 1
+        }
+      });
+
+      let uploaded = null;
+      let tooLarge = false;
+
+      bb.on("file", (field, stream, info) => {
+        if (field !== "image") {
+          stream.resume();
+          return;
+        }
+
+        const chunks = [];
+
+        stream.on("data", chunk => chunks.push(chunk));
+
+        stream.on("limit", () => {
+          tooLarge = true;
+        });
+
+        stream.on("end", () => {
+          uploaded = {
+            buffer: Buffer.concat(chunks),
+            mime: info.mimeType,
+            filename: info.filename
+          };
+        });
+      });
+
+      bb.on("error", reject);
+
+      bb.on("finish", () => {
+        if (tooLarge) {
+          return reject(new Error("IMAGE_TOO_LARGE"));
+        }
+
+        if (!uploaded) {
+          return reject(new Error("IMAGE_MISSING"));
+        }
+
+        resolve(uploaded);
+      });
+
+      req.pipe(bb);
+    });
+
+    const form = new FormData();
+
+    form.append(
+      "image",
+      new Blob([image.buffer], {
+        type: image.mime
+      }),
+      image.filename || "image.png"
+    );
+
+    form.append("format", "png");
+
+    const pixelcut = await fetch(
+      "https://api.developer.pixelcut.ai/v1/remove-background",
+      {
+        method: "POST",
+        headers: {
+          "X-API-KEY": apiKey,
+          "Accept": "image/*"
+        },
+        body: form
       }
-    });
+    );
 
-    let imageBuffer = null;
-    let imageName = "upload.png";
-    let imageType = "image/png";
-    let uploadError = null;
+    if (!pixelcut.ok) {
+      let errorCode = "upstream_error";
 
-    bb.on("file", (field, stream, info) => {
-      if (field !== "image") {
-        stream.resume();
-        return;
-      }
-
-      imageName = info.filename || imageName;
-      imageType = info.mimeType || imageType;
-
-      const chunks = [];
-
-      stream.on("data", chunk => {
-        chunks.push(chunk);
-      });
-
-      stream.on("limit", () => {
-        uploadError = "Image exceeds the 4 MB upload limit.";
-      });
-
-      stream.on("end", () => {
-        imageBuffer = Buffer.concat(chunks);
-      });
-    });
-
-    bb.on("error", error => {
-      uploadError = error.message;
-    });
-
-    bb.on("finish", async () => {
       try {
-        if (uploadError) {
-          return res.status(400).json({
-            error: uploadError
-          });
-        }
+        const data = await pixelcut.json();
+        errorCode = data.error_code || errorCode;
+      } catch (_) {}
 
-        if (!imageBuffer || imageBuffer.length === 0) {
-          return res.status(400).json({
-            error: "No image was uploaded."
-          });
-        }
+      return res.status(502).json({
+        error: "Pixelcut processing failed.",
+        code: pixelcut.status,
+        reason: errorCode
+      });
+    }
 
-        const form = new FormData();
+    const contentType =
+      pixelcut.headers.get("content-type") || "";
 
-        form.append(
-          "image",
-          new Blob([imageBuffer], { type: imageType }),
-          imageName
-        );
+    if (contentType.includes("application/json")) {
+      const data = await pixelcut.json();
 
-        form.append("format", "png");
-
-        const pixelcutResponse = await fetch(
-          "https://api.developer.pixelcut.ai/v1/remove-background",
-          {
-            method: "POST",
-            headers: {
-              "X-API-KEY": apiKey,
-              "Accept": "image/*"
-            },
-            body: form
-          }
-        );
-
-        if (!pixelcutResponse.ok) {
-          const details = await pixelcutResponse.text();
-
-          return res.status(pixelcutResponse.status).json({
-            error: "Pixelcut API request failed.",
-            details: details.slice(0, 500)
-          });
-        }
-
-        const output = Buffer.from(
-          await pixelcutResponse.arrayBuffer()
-        );
-
-        res.setHeader(
-          "Content-Type",
-          pixelcutResponse.headers.get("content-type") ||
-            "image/png"
-        );
-
-        res.setHeader(
-          "Content-Disposition",
-          'inline; filename="clearcut-result.png"'
-        );
-
-        res.setHeader("Cache-Control", "no-store");
-
-        return res.status(200).send(output);
-
-      } catch (error) {
-        return res.status(500).json({
-          error: error.message || "Background removal failed."
+      if (!data.result_url) {
+        return res.status(502).json({
+          error: "Pixelcut returned no result image."
         });
       }
-    });
 
-    req.pipe(bb);
+      const result = await fetch(data.result_url);
+
+      if (!result.ok) {
+        return res.status(502).json({
+          error: "Could not retrieve the processed image."
+        });
+      }
+
+      const buffer = Buffer.from(
+        await result.arrayBuffer()
+      );
+
+      res.setHeader("Content-Type", "image/png");
+      res.setHeader("Cache-Control", "no-store");
+
+      return res.status(200).send(buffer);
+    }
+
+    const output = Buffer.from(
+      await pixelcut.arrayBuffer()
+    );
+
+    res.setHeader("Content-Type", "image/png");
+    res.setHeader("Cache-Control", "no-store");
+
+    return res.status(200).send(output);
 
   } catch (error) {
+    if (error.message === "IMAGE_TOO_LARGE") {
+      return res.status(413).json({
+        error: "Image is too large. Use an image under 4 MB."
+      });
+    }
+
+    if (error.message === "IMAGE_MISSING") {
+      return res.status(400).json({
+        error: "Please upload an image using the image field."
+      });
+    }
+
     return res.status(500).json({
-      error: error.message || "Backend error."
+      error: "The background-removal request failed."
     });
   }
 };
-
