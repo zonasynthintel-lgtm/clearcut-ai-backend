@@ -9,148 +9,82 @@
 
 <style>
 :root {
-  --bg:#0d1017;
-  --panel:#151a24;
-  --line:#2a3344;
-  --text:#f4f7fb;
-  --muted:#9ba8bb;
-  --accent:#8b7cff;
-  --accent2:#56d6c2;
-  --danger:#ff7b88;
-  --radius:20px;
+  --bg:#0d1017;--panel:#151a24;--line:#2a3344;
+  --text:#f4f7fb;--muted:#9ba8bb;
+  --accent:#8b7cff;--accent2:#56d6c2;
+  --danger:#ff7b88;--radius:20px;
 }
 *{box-sizing:border-box}
 body{
-  margin:0;
-  background:radial-gradient(ellipse at 80% 0%,#242044 0,transparent 35%),var(--bg);
-  color:var(--text);
-  font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
-  min-height:100vh;
+  margin:0;background:radial-gradient(ellipse at 80% 0%,#242044 0,transparent 35%),var(--bg);
+  color:var(--text);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;min-height:100vh
 }
 button,input{font:inherit}
 button{cursor:pointer}
 button:disabled{opacity:.45;cursor:not-allowed}
 .wrap{max-width:1180px;margin:auto;padding:22px 20px 50px}
-header{
-  display:flex;align-items:center;justify-content:space-between;
-  gap:16px;padding:8px 0 28px
-}
+header{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:8px 0 28px}
 .brand{display:flex;align-items:center;gap:12px;font-weight:800;font-size:21px}
 .logo{
-  width:42px;height:42px;border-radius:14px;
-  background:linear-gradient(135deg,var(--accent),#4cdbd0);
+  width:42px;height:42px;border-radius:14px;background:linear-gradient(135deg,var(--accent),#4cdbd0);
   display:grid;place-items:center;color:#11131b;font-size:22px;font-weight:900
 }
-.brand small{
-  display:block;color:var(--muted);font-size:11px;
-  font-weight:500;letter-spacing:1.5px;text-transform:uppercase
-}
-.pill{
-  border:1px solid var(--line);color:#c6d0df;border-radius:99px;
-  padding:8px 13px;font-size:12px;background:#171c27
-}
+.brand small{display:block;color:var(--muted);font-size:11px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase}
+.pill{border:1px solid var(--line);color:#c6d0df;border-radius:99px;padding:8px 13px;font-size:12px;background:#171c27}
 .hero{text-align:center;margin:16px auto 30px;max-width:720px}
-.eyebrow{
-  color:var(--accent2);font-size:12px;letter-spacing:2px;
-  text-transform:uppercase;font-weight:750
-}
-.hero h1{
-  font-size:clamp(34px,6vw,58px);line-height:1.05;
-  letter-spacing:-2px;margin:12px 0
-}
-.hero h1 span{
-  background:linear-gradient(90deg,#a99cff,#65e4d0);
-  -webkit-background-clip:text;background-clip:text;color:transparent
-}
+.eyebrow{color:var(--accent2);font-size:12px;letter-spacing:2px;text-transform:uppercase;font-weight:750}
+.hero h1{font-size:clamp(34px,6vw,58px);line-height:1.05;letter-spacing:-2px;margin:12px 0}
+.hero h1 span{background:linear-gradient(90deg,#a99cff,#65e4d0);-webkit-background-clip:text;background-clip:text;color:transparent}
 .hero p{color:var(--muted);margin:0 auto;max-width:550px}
-.workspace{
-  display:grid;grid-template-columns:minmax(0,1fr) 330px;
-  gap:18px;align-items:start
-}
-.panel{
-  background:linear-gradient(180deg,#171d29,#131822);
-  border:1px solid var(--line);border-radius:var(--radius);
-  overflow:hidden;box-shadow:0 18px 50px #0002
-}
-.panelhead{
-  padding:18px 20px;border-bottom:1px solid var(--line);
-  display:flex;justify-content:space-between;align-items:center;gap:12px
-}
+.workspace{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:18px;align-items:start}
+.panel{background:linear-gradient(180deg,#171d29,#131822);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;box-shadow:0 18px 50px #0002}
+.panelhead{padding:18px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:12px}
 .panelhead h2{margin:0;font-size:15px}
 .sub{color:var(--muted);font-size:12px}
 .stage{padding:18px;min-height:420px;display:flex;flex-direction:column;gap:15px}
 .drop{
-  flex:1;min-height:290px;border:1.5px dashed #48536b;
-  border-radius:16px;display:flex;align-items:center;justify-content:center;
-  text-align:center;padding:24px;background:linear-gradient(135deg,#20263755,#151a2455);
-  transition:.2s
+  flex:1;min-height:290px;border:1.5px dashed #48536b;border-radius:16px;
+  display:flex;align-items:center;justify-content:center;text-align:center;padding:24px;
+  background:linear-gradient(135deg,#20263755,#151a2455);transition:.2s
 }
 .drop.drag{border-color:var(--accent2);background:#56d6c211}
 .dropinner{max-width:360px}
 .uploadicon{
-  width:66px;height:66px;margin:0 auto 15px;border-radius:20px;
-  background:#8b7cff20;border:1px solid #8b7cff55;
-  display:grid;place-items:center;font-size:28px;color:#b6aaff
+  width:66px;height:66px;margin:0 auto 15px;border-radius:20px;background:#8b7cff20;
+  border:1px solid #8b7cff55;display:grid;place-items:center;font-size:28px;color:#b6aaff
 }
 .drop h3{margin:0 0 6px;font-size:20px}
 .drop p{color:var(--muted);margin:0 0 17px;font-size:13px}
 .primary{
-  border:0;border-radius:12px;padding:12px 17px;
-  background:linear-gradient(110deg,#a195ff,#6fdbd0);
+  border:0;border-radius:12px;padding:12px 17px;background:linear-gradient(110deg,#a195ff,#6fdbd0);
   color:#10131b;font-weight:800;box-shadow:0 7px 20px #8b7cff25
 }
-.upload-label{
-  display:inline-flex;align-items:center;justify-content:center;
-  position:relative;overflow:hidden;cursor:pointer
-}
-.upload-label input[type=file]{
-  position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer
-}
-.secondary{
-  border:1px solid var(--line);border-radius:11px;padding:10px 13px;
-  background:#202736;color:var(--text);font-weight:650
-}
-.fileinfo{
-  display:none;align-items:center;gap:12px;background:#202736;
-  border:1px solid var(--line);border-radius:13px;padding:12px
-}
+.upload-label{display:inline-flex;align-items:center;justify-content:center;position:relative;overflow:hidden;cursor:pointer}
+.upload-label input[type=file]{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}
+.secondary{border:1px solid var(--line);border-radius:11px;padding:10px 13px;background:#202736;color:var(--text);font-weight:650}
+.fileinfo{display:none;align-items:center;gap:12px;background:#202736;border:1px solid var(--line);border-radius:13px;padding:12px}
 .fileinfo.show{display:flex}
-.filethumb{
-  width:48px;height:48px;object-fit:cover;border-radius:9px;background:#fff
-}
+.filethumb{width:48px;height:48px;object-fit:cover;border-radius:9px;background:#fff}
 .filemeta{min-width:0;flex:1}
-.filemeta strong{
-  display:block;overflow:hidden;text-overflow:ellipsis;
-  white-space:nowrap;font-size:13px
-}
+.filemeta strong{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px}
 .filemeta span{font-size:11px;color:var(--muted)}
 .removefile{background:none;border:0;color:var(--muted);font-size:20px}
 .preview{
-  display:none;min-height:280px;position:relative;overflow:hidden;
-  border-radius:15px;border:1px solid var(--line);
+  display:none;min-height:280px;position:relative;overflow:hidden;border-radius:15px;border:1px solid var(--line);
   background-color:#f5f6fa;
-  background-image:linear-gradient(45deg,#e1e4ea 25%,transparent 25%),
-  linear-gradient(-45deg,#e1e4ea 25%,transparent 25%),
-  linear-gradient(45deg,transparent 75%,#e1e4ea 75%),
-  linear-gradient(-45deg,transparent 75%,#e1e4ea 75%);
-  background-size:20px 20px;
-  background-position:0 0,0 10px,10px -10px,-10px 0
+  background-image:linear-gradient(45deg,#e1e4ea 25%,transparent 25%),linear-gradient(-45deg,#e1e4ea 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#e1e4ea 75%),linear-gradient(-45deg,transparent 75%,#e1e4ea 75%);
+  background-size:20px 20px;background-position:0 0,0 10px,10px -10px,-10px 0
 }
 .preview.show{display:grid;place-items:center}
 .preview img{max-width:100%;max-height:460px;object-fit:contain;display:block}
-.previewlabel{
-  position:absolute;top:12px;left:12px;background:#10131bd9;
-  color:white;padding:5px 9px;border-radius:8px;font-size:11px
-}
+.previewlabel{position:absolute;top:12px;left:12px;background:#10131bd9;color:white;padding:5px 9px;border-radius:8px;font-size:11px}
 .progress{display:none;background:#202736;border-radius:12px;padding:13px}
 .progress.show{display:block}
 .progressrow{display:flex;justify-content:space-between;font-size:12px;margin-bottom:9px}
 .bar{height:6px;border-radius:10px;background:#333d50;overflow:hidden}
-.bar span{
-  display:block;height:100%;width:0;
-  background:linear-gradient(90deg,var(--accent),var(--accent2));
-  transition:width .3s
-}
+.bar span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .3s}
+.bar span.indeterminate{width:35%;animation:loading 1.2s ease-in-out infinite alternate}
+@keyframes loading{from{transform:translateX(0)}to{transform:translateX(185%)}}
 .actions{display:flex;gap:10px;flex-wrap:wrap}
 .actions button{flex:1;min-width:130px}
 .hint{color:var(--muted);font-size:11px;text-align:center}
@@ -158,54 +92,24 @@ header{
 .sidebody{padding:18px}
 .feature{display:flex;gap:12px;margin-bottom:17px}
 .feature:last-child{margin-bottom:0}
-.featicon{
-  width:36px;height:36px;flex:none;border-radius:11px;
-  background:#8b7cff1c;display:grid;place-items:center;color:#b7adff
-}
+.featicon{width:36px;height:36px;flex:none;border-radius:11px;background:#8b7cff1c;display:grid;place-items:center;color:#b7adff}
 .feature strong{font-size:13px;display:block}
 .feature p{font-size:12px;color:var(--muted);margin:3px 0 0}
 .setting{margin-bottom:17px}
 .setting:last-child{margin-bottom:0}
-.setting label{
-  display:flex;justify-content:space-between;
-  font-size:12px;font-weight:700;margin-bottom:8px
-}
-.setting select,.setting input[type=range]{width:100%}
-.setting select,.setting input[type=text]{
-  background:#202736;border:1px solid var(--line);
-  border-radius:10px;padding:11px;color:var(--text)
-}
-.setting input[type=range]{accent-color:var(--accent)}
-.status{
-  padding:12px 14px;border-radius:12px;font-size:12px;
-  background:#202736;color:#c5d1e3;border:1px solid var(--line);
-  overflow-wrap:anywhere
-}
+.setting label{display:flex;justify-content:space-between;font-size:12px;font-weight:700;margin-bottom:8px}
+.setting input[type=text]{width:100%;background:#202736;border:1px solid var(--line);border-radius:10px;padding:11px;color:var(--text)}
+.status{padding:12px 14px;border-radius:12px;font-size:12px;background:#202736;color:#c5d1e3;border:1px solid var(--line);overflow-wrap:anywhere}
 .status.error{color:#ffb4bd;border-color:#783b49;background:#351e28}
 .status.success{color:#9ef0db;border-color:#28685d;background:#16352f}
-footer{
-  display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;
-  color:#778399;font-size:11px;padding:24px 3px 0
-}
+footer{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:#778399;font-size:11px;padding:24px 3px 0}
 .hidden{display:none!important}
-@media(max-width:850px){
-  .workspace{grid-template-columns:1fr}
-  .side{display:grid;grid-template-columns:1fr 1fr}
-  .stage{min-height:unset}.drop{min-height:280px}
-}
+@media(max-width:850px){.workspace{grid-template-columns:1fr}.side{display:grid;grid-template-columns:1fr 1fr}.stage{min-height:unset}.drop{min-height:280px}}
 @media(max-width:560px){
-  .wrap{padding:14px 12px 30px}
-  header{padding-bottom:20px}
-  .pill{font-size:10px;padding:7px 9px}
-  .brand{font-size:18px}
-  .hero{margin:12px auto 23px}
-  .hero h1{letter-spacing:-1.4px}
-  .side{grid-template-columns:1fr}
-  .stage{padding:12px}.drop{min-height:250px}
-  .panelhead{padding:15px}
-  .preview{min-height:220px}
-  .actions{flex-direction:column}
-  .actions button{width:100%}
+  .wrap{padding:14px 12px 30px}header{padding-bottom:20px}.pill{font-size:10px;padding:7px 9px}
+  .brand{font-size:18px}.hero{margin:12px auto 23px}.hero h1{letter-spacing:-1.4px}
+  .side{grid-template-columns:1fr}.stage{padding:12px}.drop{min-height:250px}
+  .panelhead{padding:15px}.preview{min-height:220px}.actions{flex-direction:column}.actions button{width:100%}
 }
 </style>
 </head>
@@ -224,22 +128,17 @@ footer{
 <section class="hero">
   <div class="eyebrow">Make your subject stand out</div>
   <h1>Remove backgrounds.<br><span>Keep the magic.</span></h1>
-  <p>Upload a photo and let AI create a clean, transparent cutout. Simple, private, and designed for creators.</p>
+  <p>Upload a photo and let AI create a clean, transparent cutout.</p>
 </section>
 
 <main class="workspace">
-
 <section class="panel">
   <div class="panelhead">
-    <div>
-      <h2>Workspace</h2>
-      <div class="sub">Upload an image to get started</div>
-    </div>
+    <div><h2>Workspace</h2><div class="sub">Upload an image to get started</div></div>
     <span class="pill">PNG · JPG · WEBP</span>
   </div>
 
   <div class="stage">
-
     <div class="drop" id="drop">
       <div class="dropinner">
         <div class="uploadicon">⇧</div>
@@ -249,16 +148,13 @@ footer{
           Choose image
           <input id="fileInput" type="file" accept="image/png,image/jpeg,image/webp">
         </label>
-        <p style="margin:13px 0 0;font-size:11px">Maximum file size: 4 MB</p>
+        <p style="margin:13px 0 0;font-size:11px">Maximum file size: 10 MB</p>
       </div>
     </div>
 
     <div class="fileinfo" id="fileinfo">
       <img class="filethumb" id="thumb" alt="">
-      <div class="filemeta">
-        <strong id="filename">Image</strong>
-        <span id="filesize"></span>
-      </div>
+      <div class="filemeta"><strong id="filename">Image</strong><span id="filesize"></span></div>
       <button class="removefile" id="clear" title="Remove image" aria-label="Remove image">×</button>
     </div>
 
@@ -268,204 +164,123 @@ footer{
     </div>
 
     <div class="progress" id="progress">
-      <div class="progressrow">
-        <span id="progressText">Preparing AI engine…</span>
-        <span id="progressPercent">0%</span>
-      </div>
+      <div class="progressrow"><span id="progressText">Preparing image…</span><span id="progressPercent">—</span></div>
       <div class="bar"><span id="progressBar"></span></div>
     </div>
 
-    <div class="status" id="status" role="status">
-      Ready. Select an image to begin.
-    </div>
+    <div class="status" id="status" role="status">Ready. Select an image to begin.</div>
 
     <div class="actions">
       <button class="primary" id="removeBtn" disabled>✦ Remove background</button>
       <button class="secondary" id="downloadBtn" disabled>↓ Download PNG</button>
     </div>
 
-    <div class="hint">
-      AI processing happens on your device. The AI model is downloaded when first needed.
-    </div>
-
+    <div class="hint">Images are sent to the background-removal service for processing. An internet connection is required.</div>
   </div>
 </section>
 
 <aside class="side">
-
   <section class="panel">
-    <div class="panelhead">
-      <div>
-        <h2>Designed for your workflow</h2>
-        <div class="sub">Clean tools, no clutter</div>
-      </div>
-    </div>
+    <div class="panelhead"><div><h2>Designed for your workflow</h2><div class="sub">Clean tools, no clutter</div></div></div>
     <div class="sidebody">
-
-      <div class="feature">
-        <div class="featicon">◇</div>
-        <div>
-          <strong>Transparent output</strong>
-          <p>Download clean PNG images with transparent backgrounds.</p>
-        </div>
-      </div>
-
-      <div class="feature">
-        <div class="featicon">⚡</div>
-        <div>
-          <strong>AI-powered removal</strong>
-          <p>Automatically identify and separate your subject.</p>
-        </div>
-      </div>
-
-      <div class="feature">
-        <div class="featicon">⌂</div>
-        <div>
-          <strong>Private processing</strong>
-          <p>Your photo is processed locally in your browser.</p>
-        </div>
-      </div>
-
+      <div class="feature"><div class="featicon">◇</div><div><strong>Transparent output</strong><p>Download clean PNG images with transparent backgrounds.</p></div></div>
+      <div class="feature"><div class="featicon">⚡</div><div><strong>Remote AI processing</strong><p>Image processing happens on a remote AI service, not on your phone.</p></div></div>
+      <div class="feature"><div class="featicon">↓</div><div><strong>Easy download</strong><p>Save your finished transparent image to your device.</p></div></div>
     </div>
   </section>
 
   <section class="panel">
-    <div class="panelhead">
-      <div>
-        <h2>Export settings</h2>
-        <div class="sub">Your preferred output</div>
-      </div>
-    </div>
+    <div class="panelhead"><div><h2>Export settings</h2><div class="sub">Your preferred output</div></div></div>
     <div class="sidebody">
-
       <div class="setting">
-        <label for="format">File format</label>
-        <select id="format">
-          <option value="png">PNG — transparent</option>
-        </select>
+        <label>File format <span>PNG</span></label>
+        <div class="status">PNG — transparent background</div>
       </div>
-
-      <div class="setting">
-        <label for="quality">
-          AI model
-          <span id="qualityLabel">Balanced</span>
-        </label>
-        <select id="quality">
-          <option value="small">Lightweight — smaller download</option>
-          <option value="medium" selected>Balanced — recommended</option>
-          <option value="large">High quality — larger download</option>
-        </select>
-        <div class="sub" style="margin-top:8px">
-          Lightweight is a better starting point for phones with limited memory.
-        </div>
-      </div>
-
       <div class="setting">
         <label for="outName">Output name</label>
-        <input id="outName" type="text" value="clearcut-background-removed"
-          style="width:100%;background:#202736;border:1px solid var(--line);border-radius:10px;padding:11px;color:var(--text)">
+        <input id="outName" type="text" value="clearcut-background-removed">
       </div>
-
     </div>
   </section>
 
   <section class="panel">
-    <div class="panelhead">
-      <div>
-        <h2>AI engine status</h2>
-        <div class="sub">Browser-based processing</div>
-      </div>
-    </div>
+    <div class="panelhead"><div><h2>AI service status</h2><div class="sub">Remote processing service</div></div></div>
     <div class="sidebody">
-      <div class="status" id="backendStatus">Local AI engine · Not loaded yet</div>
-      <p class="sub" style="margin:10px 0 0">
-        The AI model loads from IMG.LY when you first process an image.
-        An internet connection is required for the initial download.
-      </p>
+      <div class="status" id="backendStatus">Remote AI service · Not tested</div>
+      <p class="sub" style="margin:10px 0 0">Free service allowance: up to 100 images per day per IP. The service is in beta and may occasionally be unavailable.</p>
     </div>
   </section>
-
 </aside>
 </main>
 
 <footer>
   <span>© ClearCut AI · Image studio</span>
-  <span>Made for creators · Browser AI edition</span>
+  <span>Made for creators</span>
 </footer>
-
 </div>
 
-<script type="module">
+<script>
+"use strict";
 
-// ==========================================
-// CLEARCUT AI — LOCAL BACKGROUND REMOVAL
-// ==========================================
+// CLEARCUT AI — REMOTE BACKGROUND REMOVAL
 
+const API_URL = "https://bgremovers.org/api/v1/remove-background";
 const $ = id => document.getElementById(id);
 
 let selectedFile = null;
 let originalUrl = null;
 let resultUrl = null;
 let busy = false;
-let removeBackgroundAI = null;
 
-// Display messages
 function setStatus(message, kind="") {
   $("status").textContent = message;
   $("status").className = "status" + (kind ? " " + kind : "");
 }
 
-// File size formatting
 function prettySize(bytes) {
   if(bytes < 1024) return bytes + " B";
   if(bytes < 1024*1024) return (bytes/1024).toFixed(1) + " KB";
   return (bytes/1024/1024).toFixed(2) + " MB";
 }
 
-// Progress bar
-function setProgress(percent, message) {
+function showProgress(message) {
   $("progress").classList.add("show");
-  $("progressBar").style.width = percent + "%";
-  $("progressPercent").textContent = percent + "%";
   $("progressText").textContent = message;
+  $("progressPercent").textContent = "Working";
+  $("progressBar").classList.add("indeterminate");
 }
 
 function hideProgress() {
   $("progress").classList.remove("show");
+  $("progressBar").classList.remove("indeterminate");
+  $("progressBar").style.width = "0";
 }
 
-// Reset old output
 function resetResult() {
   if(resultUrl) URL.revokeObjectURL(resultUrl);
-
   resultUrl = null;
   $("downloadBtn").disabled = true;
   $("previewlabel").textContent = "Original image";
 }
 
-// Clear selected image
 function clearImage() {
   if(busy) return;
-
   if(originalUrl) URL.revokeObjectURL(originalUrl);
 
   originalUrl = null;
   selectedFile = null;
-
   resetResult();
 
   $("fileInput").value = "";
   $("fileinfo").classList.remove("show");
   $("preview").classList.remove("show");
   $("drop").classList.remove("hidden");
-
   $("removeBtn").disabled = true;
 
   hideProgress();
   setStatus("Ready. Select an image to begin.");
 }
 
-// Load image
 function loadImage(file) {
   if(!file || busy) return;
 
@@ -474,8 +289,8 @@ function loadImage(file) {
     return;
   }
 
-  if(file.size > 4*1024*1024) {
-    setStatus("This image is larger than 4 MB. Please choose a smaller file.", "error");
+  if(file.size > 10*1024*1024) {
+    setStatus("This image is larger than 10 MB. Please choose a smaller file.", "error");
     return;
   }
 
@@ -483,234 +298,181 @@ function loadImage(file) {
 
   selectedFile = file;
   originalUrl = URL.createObjectURL(file);
-
   resetResult();
 
   $("thumb").src = originalUrl;
   $("previewImg").src = originalUrl;
-
   $("filename").textContent = file.name;
   $("filesize").textContent = prettySize(file.size);
 
   $("fileinfo").classList.add("show");
   $("preview").classList.add("show");
   $("drop").classList.add("hidden");
-
   $("removeBtn").disabled = false;
 
   setStatus("Image loaded. Ready for background removal.", "success");
 }
 
-// Load the AI library
-async function loadAIEngine() {
+async function requestBackgroundRemoval(file) {
+  const formData = new FormData();
+  formData.append("image", file, file.name);
 
-  if(removeBackgroundAI) return removeBackgroundAI;
+  let response;
 
-  setStatus("Loading the AI engine. Please wait…");
-  $("backendStatus").textContent = "Downloading AI engine…";
-
-  try {
-
-    const library = await import(
-      "https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.7.0/+esm"
+  // Retry once if the provider reports a temporary upstream failure.
+  for(let attempt = 1; attempt <= 2; attempt++) {
+    showProgress(attempt === 1
+      ? "Uploading image and processing with AI…"
+      : "Retrying temporary service error…"
     );
 
-    const candidate = library.removeBackground;
+    response = await fetch(API_URL, {
+      method: "POST",
+      body: formData
+    });
 
-    if(typeof candidate !== "function") {
-      throw new Error(
-        "The AI library loaded, but its removeBackground function was not found."
-      );
-    }
-
-    removeBackgroundAI = candidate;
-
-    $("backendStatus").textContent = "AI library loaded · Ready";
-
-    return removeBackgroundAI;
-
-  } catch(error) {
-
-    console.error("AI library loading error:", error);
-
-    throw new Error(
-      "Could not load the AI library. Check your internet connection or try another browser. Details: " +
-      (error.message || "Unknown loading error")
-    );
-
+    if(response.status !== 502 || attempt === 2) break;
+    await new Promise(resolve => setTimeout(resolve, 1800));
   }
-}
 
-// Process image locally
-async function removeBackgroundLocally(file) {
+  if(!response.ok) {
+    let message = "The background-removal service could not process this image.";
 
-  const removeBackground = await loadAIEngine();
-
-  const selectedModel = $("quality").value;
-
-  const modelNames = {
-    small: "small",
-    medium: "medium",
-    large: "large"
-  };
-
-  return await removeBackground(file, {
-    model: modelNames[selectedModel],
-    device: "cpu",
-    output: {
-      format: "image/png",
-      quality: 1
-    },
-    progress: (key, current, total) => {
-
-      if(total > 0) {
-
-        const percent = Math.round((current / total) * 85);
-
-        const label = key.startsWith("fetch:")
-          ? "Downloading AI model and resources…"
-          : "AI is processing your image…";
-
-        setProgress(Math.min(85, percent), label);
-      }
+    try {
+      const data = await response.json();
+      message = data?.error?.message || data?.error?.code || data?.message || message;
+    } catch(_) {
+      // Keep the default message if the server did not return JSON.
     }
-  });
+
+    if(response.status === 429) {
+      throw new Error("The free daily request limit has been reached. Please try again after the limit resets.");
+    }
+
+    if(response.status === 413) {
+      throw new Error("The image is too large. Please choose an image below 10 MB.");
+    }
+
+    if(response.status === 502) {
+      throw new Error("The AI provider is temporarily unavailable. Please try again later.");
+    }
+
+    throw new Error(message + " (HTTP " + response.status + ")");
+  }
+
+  const contentType = response.headers.get("content-type") || "";
+
+  if(!contentType.includes("image")) {
+    throw new Error("The service returned an unexpected response instead of a PNG image.");
+  }
+
+  const remaining = response.headers.get("X-RateLimit-Remaining");
+  return {
+    blob: await response.blob(),
+    remaining
+  };
 }
 
-// Main background removal function
 async function runBackgroundRemoval() {
-
   if(!selectedFile || busy) return;
 
   busy = true;
-
   $("removeBtn").disabled = true;
   $("downloadBtn").disabled = true;
+  $("backendStatus").textContent = "Remote AI service · Processing";
 
-  setProgress(5, "Starting AI engine…");
-  setStatus("Preparing your image. Please wait…");
+  setStatus("Sending your image for background removal. Please wait…");
+  showProgress("Connecting to AI service…");
 
   try {
+    const result = await requestBackgroundRemoval(selectedFile);
 
-    setProgress(10, "Loading AI model…");
-
-    const outputBlob = await removeBackgroundLocally(selectedFile);
-
-    if(!(outputBlob instanceof Blob) || outputBlob.size === 0) {
-      throw new Error("The AI engine returned an empty image.");
+    if(!(result.blob instanceof Blob) || result.blob.size === 0) {
+      throw new Error("The service returned an empty image.");
     }
 
-    setProgress(92, "Preparing transparent preview…");
+    if(!result.blob.type.includes("image")) {
+      throw new Error("The returned file is not a valid image.");
+    }
 
     resetResult();
-
-    resultUrl = URL.createObjectURL(outputBlob);
+    resultUrl = URL.createObjectURL(result.blob);
 
     $("previewImg").src = resultUrl;
     $("previewlabel").textContent = "Background removed";
-
     $("downloadBtn").disabled = false;
-
-    setProgress(100, "Complete");
-
-    setStatus(
-      "Background removed successfully on your device.",
-      "success"
-    );
-
-    $("backendStatus").textContent = "Local AI engine · Ready";
-
-  } catch(error) {
-
-    console.error("ClearCut AI error:", error);
 
     hideProgress();
 
-    $("backendStatus").textContent = "AI engine · Error";
+    let message = "Background removed successfully!";
+    if(result.remaining !== null) {
+      message += " Free requests remaining today: " + result.remaining + ".";
+    }
 
-    setStatus(
-      (error && error.message ? error.message : "Could not process this image."),
-      "error"
-    );
+    setStatus(message, "success");
+    $("backendStatus").textContent = "Remote AI service · Ready";
+
+  } catch(error) {
+    console.error("ClearCut AI error:", error);
+    hideProgress();
+
+    $("backendStatus").textContent = "Remote AI service · Error";
+
+    if(error instanceof TypeError) {
+      setStatus(
+        "Could not connect to the service. Check your internet connection. If the problem continues, the service may not allow browser requests.",
+        "error"
+      );
+    } else {
+      setStatus(error.message || "Could not process this image.", "error");
+    }
 
   } finally {
-
     busy = false;
     $("removeBtn").disabled = !selectedFile;
-
   }
 }
 
-// Upload image
 $("fileInput").addEventListener("change", event => {
   loadImage(event.target.files[0]);
 });
 
-// Clear image
 $("clear").addEventListener("click", clearImage);
-
-// Remove background
 $("removeBtn").addEventListener("click", runBackgroundRemoval);
 
-// Download transparent PNG
 $("downloadBtn").addEventListener("click", () => {
-
   if(!resultUrl) return;
 
-  const link = document.createElement("a");
-
-  link.href = resultUrl;
-
-  const name = $("outName").value
-    .trim()
+  const name = $("outName").value.trim()
     .replace(/[^\w\-]+/g, "-") || "clearcut-output";
 
+  const link = document.createElement("a");
+  link.href = resultUrl;
   link.download = name + ".png";
-
   document.body.appendChild(link);
   link.click();
   link.remove();
-
 });
 
-// AI model setting labels
-$("quality").addEventListener("change", event => {
-
-  const labels = {
-    small: "Lightweight",
-    medium: "Balanced",
-    large: "High quality"
-  };
-
-  $("qualityLabel").textContent = labels[event.target.value];
-
-});
-
-// Drag and drop support
 const drop = $("drop");
 
 ["dragenter", "dragover"].forEach(eventName => {
-
   drop.addEventListener(eventName, event => {
     event.preventDefault();
     drop.classList.add("drag");
   });
-
 });
 
 ["dragleave", "drop"].forEach(eventName => {
-
   drop.addEventListener(eventName, event => {
     event.preventDefault();
     drop.classList.remove("drag");
   });
-
 });
 
 drop.addEventListener("drop", event => {
   loadImage(event.dataTransfer.files[0]);
 });
-
 </script>
 </body>
 </html>
