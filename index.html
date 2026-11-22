@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#10131c">
+<title>ClearCut AI — Background Remover</title>
+<style>
+:root{--bg:#0d1017;--panel:#151a24;--panel2:#1b2230;--line:#2a3344;--text:#f4f7fb;--muted:#9ba8bb;--accent:#8b7cff;--accent2:#56d6c2;--danger:#ff7b88;--radius:20px}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 80% 0%,#242044 0,transparent 35%),var(--bg);color:var(--text);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;min-height:100vh}
+button,input{font:inherit}button{cursor:pointer}button:disabled{opacity:.45;cursor:not-allowed}
+.wrap{max-width:1180px;margin:auto;padding:22px 20px 50px}
+header{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:8px 0 28px}
+.brand{display:flex;align-items:center;gap:12px;font-weight:800;font-size:21px;letter-spacing:-.5px}.logo{width:42px;height:42px;border-radius:14px;background:linear-gradient(135deg,var(--accent),#4cdbd0);display:grid;place-items:center;color:#11131b;font-size:22px;font-weight:900}
+.brand small{display:block;color:var(--muted);font-size:11px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase}
+.pill{border:1px solid var(--line);color:#c6d0df;border-radius:99px;padding:8px 13px;font-size:12px;background:#171c27}
+.hero{text-align:center;margin:16px auto 30px;max-width:720px}.eyebrow{color:var(--accent2);font-size:12px;letter-spacing:2px;text-transform:uppercase;font-weight:750}.hero h1{font-size:clamp(34px,6vw,58px);line-height:1.05;letter-spacing:-2px;margin:12px 0}.hero h1 span{background:linear-gradient(90deg,#a99cff,#65e4d0);-webkit-background-clip:text;background-clip:text;color:transparent}.hero p{color:var(--muted);margin:0 auto;max-width:550px}
+.workspace{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:18px;align-items:start}
+.panel{background:linear-gradient(180deg,#171d29,#131822);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;box-shadow:0 18px 50px #0002}
+.panelhead{padding:18px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:12px}.panelhead h2{margin:0;font-size:15px}.sub{color:var(--muted);font-size:12px}
+.stage{padding:18px;min-height:420px;display:flex;flex-direction:column;gap:15px}
+.drop{flex:1;min-height:290px;border:1.5px dashed #48536b;border-radius:16px;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px;background:linear-gradient(135deg,#20263755,#151a2455);transition:.2s}
+.drop.drag{border-color:var(--accent2);background:#56d6c211}.dropinner{max-width:360px}.uploadicon{width:66px;height:66px;margin:0 auto 15px;border-radius:20px;background:#8b7cff20;border:1px solid #8b7cff55;display:grid;place-items:center;font-size:28px;color:#b6aaff}
+.drop h3{margin:0 0 6px;font-size:20px}.drop p{color:var(--muted);margin:0 0 17px;font-size:13px}.primary{border:0;border-radius:12px;padding:12px 17px;background:linear-gradient(110deg,#a195ff,#6fdbd0);color:#10131b;font-weight:800;box-shadow:0 7px 20px #8b7cff25}
+.upload-label{display:inline-flex;align-items:center;justify-content:center;position:relative;overflow:hidden;cursor:pointer}
+.upload-label input[type=file]{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}.secondary{border:1px solid var(--line);border-radius:11px;padding:10px 13px;background:#202736;color:var(--text);font-weight:650}.textbtn{background:none;border:0;color:#b7adff;padding:5px;font-weight:700}
+.fileinfo{display:none;align-items:center;gap:12px;background:#202736;border:1px solid var(--line);border-radius:13px;padding:12px}.fileinfo.show{display:flex}.filethumb{width:48px;height:48px;object-fit:cover;border-radius:9px;background:#fff}.filemeta{min-width:0;flex:1}.filemeta strong{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px}.filemeta span{font-size:11px;color:var(--muted)}.removefile{background:none;border:0;color:var(--muted);font-size:20px}
+.preview{display:none;min-height:280px;position:relative;overflow:hidden;border-radius:15px;border:1px solid var(--line);background-color:#f5f6fa;background-image:linear-gradient(45deg,#e1e4ea 25%,transparent 25%),linear-gradient(-45deg,#e1e4ea 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#e1e4ea 75%),linear-gradient(-45deg,transparent 75%,#e1e4ea 75%);background-size:20px 20px;background-position:0 0,0 10px,10px -10px,-10px 0}
+.preview.show{display:grid;place-items:center}.preview img{max-width:100%;max-height:460px;object-fit:contain;display:block}.preview .previewlabel{position:absolute;top:12px;left:12px;background:#10131bd9;color:white;padding:5px 9px;border-radius:8px;font-size:11px}
+.progress{display:none;background:#202736;border-radius:12px;padding:13px}.progress.show{display:block}.progressrow{display:flex;justify-content:space-between;font-size:12px;margin-bottom:9px}.bar{height:6px;border-radius:10px;background:#333d50;overflow:hidden}.bar span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .3s}
+.actions{display:flex;gap:10px;flex-wrap:wrap}.actions button{flex:1;min-width:130px}.hint{color:var(--muted);font-size:11px;text-align:center}
+.side{display:flex;flex-direction:column;gap:15px}.sidebody{padding:18px}.feature{display:flex;gap:12px;margin-bottom:17px}.feature:last-child{margin-bottom:0}.featicon{width:36px;height:36px;flex:none;border-radius:11px;background:#8b7cff1c;display:grid;place-items:center;color:#b7adff}.feature strong{font-size:13px;display:block}.feature p{font-size:12px;color:var(--muted);margin:3px 0 0}
+.setting{margin-bottom:17px}.setting:last-child{margin-bottom:0}.setting label{display:flex;justify-content:space-between;font-size:12px;font-weight:700;margin-bottom:8px}.setting select,.setting input[type=range]{width:100%}.setting select{background:#202736;border:1px solid var(--line);border-radius:10px;padding:11px;color:var(--text)}.setting input[type=range]{accent-color:var(--accent)}
+.status{padding:12px 14px;border-radius:12px;font-size:12px;background:#202736;color:#c5d1e3;border:1px solid var(--line)}.status.error{color:#ffb4bd;border-color:#783b49;background:#351e28}.status.success{color:#9ef0db;border-color:#28685d;background:#16352f}
+footer{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:#778399;font-size:11px;padding:24px 3px 0}
+.hidden{display:none!important}
+@media(max-width:850px){.workspace{grid-template-columns:1fr}.side{display:grid;grid-template-columns:1fr 1fr}.stage{min-height:unset}.drop{min-height:280px}}
+@media(max-width:560px){.wrap{padding:14px 12px 30px}header{padding-bottom:20px}.pill{font-size:10px;padding:7px 9px}.brand{font-size:18px}.hero{margin:12px auto 23px}.hero h1{letter-spacing:-1.4px}.side{grid-template-columns:1fr}.stage{padding:12px}.drop{min-height:250px}.panelhead{padding:15px}.preview{min-height:220px}.actions{flex-direction:column}.actions button{width:100%}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="brand"><div class="logo">✂</div><div>ClearCut AI<small>Image studio</small></div></div>
+  <div class="pill">✦ Background remover</div>
+</header>
+<section class="hero">
+  <div class="eyebrow">Make your subject stand out</div>
+  <h1>Remove backgrounds.<br><span>Keep the magic.</span></h1>
+  <p>Upload a photo and prepare it for a clean, transparent cutout. Simple, fast, and designed for creators.</p>
+</section>
+
+<main class="workspace">
+<section class="panel">
+  <div class="panelhead"><div><h2>Workspace</h2><div class="sub">Upload an image to get started</div></div><span class="pill">PNG · JPG · WEBP</span></div>
+  <div class="stage">
+    <div class="drop" id="drop">
+      <div class="dropinner">
+        <div class="uploadicon">⇧</div>
+        <h3>Drop your image here</h3>
+        <p>Or browse your device. For best results, use a clear photo with a visible subject.</p>
+        <label class="primary upload-label">Choose image<input id="fileInput" type="file" accept="image/png,image/jpeg,image/webp"></label>
+        <p style="margin:13px 0 0;font-size:11px">Maximum file size: 4 MB</p>
+      </div>
+    </div>
+    <div class="fileinfo" id="fileinfo">
+      <img class="filethumb" id="thumb" alt="">
+      <div class="filemeta"><strong id="filename">Image</strong><span id="filesize"></span></div>
+      <button class="removefile" id="clear" title="Remove image" aria-label="Remove image">×</button>
+    </div>
+    <div class="preview" id="preview"><span class="previewlabel" id="previewlabel">Original image</span><img id="previewImg" alt="Image preview"></div>
+    <div class="progress" id="progress"><div class="progressrow"><span id="progressText">Preparing image…</span><span id="progressPercent">0%</span></div><div class="bar"><span id="progressBar"></span></div></div>
+    <div class="status" id="status" role="status">Ready. Select an image to begin.</div>
+    <div class="actions">
+      <button class="primary" id="removeBtn" disabled>✦ Remove background</button>
+      <button class="secondary" id="downloadBtn" disabled>↓ Download PNG</button>
+    </div>
+    <div class="hint">Your image is sent to the secure backend for background removal.</div>
+  </div>
+</section>
+
+<aside class="side">
+  <section class="panel">
+    <div class="panelhead"><div><h2>Designed for your workflow</h2><div class="sub">Clean tools, no clutter</div></div></div>
+    <div class="sidebody">
+      <div class="feature"><div class="featicon">◇</div><div><strong>Transparent output</strong><p>Preview cutouts on a checkerboard canvas.</p></div></div>
+      <div class="feature"><div class="featicon">⚡</div><div><strong>Fast upload flow</strong><p>Optimised file handling with clear progress feedback.</p></div></div>
+      <div class="feature"><div class="featicon">↗</div><div><strong>Ready to integrate</strong><p>Backend calls are isolated in one adapter function.</p></div></div>
+    </div>
+  </section>
+  <section class="panel">
+    <div class="panelhead"><div><h2>Export settings</h2><div class="sub">Your preferred output</div></div></div>
+    <div class="sidebody">
+      <div class="setting"><label for="format">File format</label><select id="format"><option value="png">PNG — transparent</option></select></div>
+      <div class="setting"><label for="quality">Image handling <span id="qualityLabel">Original</span></label><input id="quality" type="range" min="1" max="3" value="3"><div class="sub">Use smaller input size for faster processing on large images.</div></div>
+      <div class="setting"><label>Output name</label><input id="outName" value="clearcut-background-removed" style="width:100%;background:#202736;border:1px solid var(--line);border-radius:10px;padding:11px;color:var(--text)"></div>
+    </div>
+  </section>
+  <section class="panel">
+    <div class="panelhead"><div><h2>Connection status</h2><div class="sub">Backend integration</div></div></div>
+    <div class="sidebody"><div class="status" id="backendStatus">Backend endpoint configured · Ready to test</div><p class="sub" style="margin:10px 0 0">The secure backend endpoint is configured. Never put secret API keys in this page.</p></div>
+  </section>
+</aside>
+</main>
+<footer><span>© ClearCut AI · Image studio</span><span>Made for creators · Frontend build</span></footer>
+</div>
+<script>
+/*
+ CLEARCUT BACKEND ADAPTER
+ Later, connect your server endpoint in BACKEND_CONFIG.endpoint.
+ Expected contract:
+   POST endpoint
+   multipart/form-data field named "image"
+   response: transparent PNG bytes (Content-Type: image/png)
+ Keep API secrets on the server. Do not put provider keys in this file.
+*/
+const BACKEND_CONFIG = {
+  endpoint: "https://clearcut-ai-backend.vercel.app/api/remove-background"
+  fieldName: "image"
+};
+
+const $ = id => document.getElementById(id);
+let selectedFile = null;
+let originalUrl = null;
+let resultUrl = null;
+let busy = false;
+
+function setStatus(message, kind="") {
+  $("status").textContent = message;
+  $("status").className = "status" + (kind ? " " + kind : "");
+}
+function prettySize(bytes) {
+  if(bytes < 1024) return bytes + " B";
+  if(bytes < 1024*1024) return (bytes/1024).toFixed(1) + " KB";
+  return (bytes/1024/1024).toFixed(2) + " MB";
+}
+function setProgress(percent, text) {
+  $("progress").classList.add("show");
+  $("progressBar").style.width = percent + "%";
+  $("progressPercent").textContent = percent + "%";
+  $("progressText").textContent = text;
+}
+function hideProgress(){ $("progress").classList.remove("show"); }
+function resetResult() {
+  if(resultUrl) URL.revokeObjectURL(resultUrl);
+  resultUrl = null;
+  $("downloadBtn").disabled = true;
+  $("previewlabel").textContent = "Original image";
+}
+function clearImage() {
+  if(originalUrl) URL.revokeObjectURL(originalUrl);
+  originalUrl = null; selectedFile = null; resetResult();
+  $("fileInput").value = "";
+  $("fileinfo").classList.remove("show");
+  $("preview").classList.remove("show");
+  $("drop").classList.remove("hidden");
+  $("removeBtn").disabled = true;
+  hideProgress(); setStatus("Ready. Select an image to begin.");
+}
+function loadImage(file) {
+  if(!file) return;
+  if(!/^image\/(png|jpeg|webp)$/.test(file.type)) {
+    setStatus("Please choose a PNG, JPG, or WEBP image.", "error"); return;
+  }
+  if(file.size > 4*1024*1024) {
+    setStatus("This image is larger than 4 MB. Please choose a smaller file.", "error"); return;
+  }
+  if(originalUrl) URL.revokeObjectURL(originalUrl);
+  selectedFile=file; originalUrl=URL.createObjectURL(file); resetResult();
+  $("thumb").src=originalUrl; $("previewImg").src=originalUrl;
+  $("filename").textContent=file.name; $("filesize").textContent=prettySize(file.size);
+  $("fileinfo").classList.add("show"); $("preview").classList.add("show");
+  $("drop").classList.add("hidden"); $("removeBtn").disabled=false;
+  setStatus("Image loaded. Ready for background removal.", "success");
+  // Auto-run once a backend endpoint is configured:
+  if(BACKEND_CONFIG.endpoint.trim()) runBackgroundRemoval();
+}
+
+/* Replace or extend this function when connecting the real provider backend.
+   This frontend expects the server to return an image/png response. */
+async function removeBackgroundFromBackend(file) {
+  if(!BACKEND_CONFIG.endpoint.trim()) {
+    throw new Error("Backend is not connected yet. Add your secure backend URL to BACKEND_CONFIG.endpoint in this HTML.");
+  }
+  const form = new FormData();
+  form.append(BACKEND_CONFIG.fieldName, file, file.name);
+  const response = await fetch(BACKEND_CONFIG.endpoint, { method:"POST", body:form });
+  if(!response.ok) {
+    const message = await response.text().catch(()=> "");
+    throw new Error("Backend request failed ("+response.status+"). "+message.slice(0,240));
+  }
+  const type=response.headers.get("Content-Type")||"";
+  if(!type.toLowerCase().includes("image/")) {
+    throw new Error("Backend response was not an image. Configure it to return transparent PNG bytes.");
+  }
+  return await response.blob();
+}
+async function runBackgroundRemoval() {
+  if(!selectedFile || busy) return;
+  busy=true; $("removeBtn").disabled=true; $("downloadBtn").disabled=true;
+  setProgress(18,"Uploading image securely…"); setStatus("Processing image. Please wait.");
+  try {
+    setProgress(55,"Removing background…");
+    const outputBlob=await removeBackgroundFromBackend(selectedFile);
+    setProgress(90,"Preparing transparent preview…");
+    resetResult(); resultUrl=URL.createObjectURL(outputBlob);
+    $("previewImg").src=resultUrl; $("previewlabel").textContent="Background removed";
+    $("downloadBtn").disabled=false;
+    setProgress(100,"Complete"); setStatus("Background removed successfully.", "success");
+  } catch(err) {
+    hideProgress(); setStatus(err.message || "Could not process this image.", "error");
+  } finally {
+    busy=false; $("removeBtn").disabled=!selectedFile;
+  }
+}
+$("fileInput").addEventListener("change",e=>loadImage(e.target.files[0]));
+$("clear").addEventListener("click",clearImage);
+$("removeBtn").addEventListener("click",runBackgroundRemoval);
+$("downloadBtn").addEventListener("click",()=>{
+  if(!resultUrl)return;
+  const a=document.createElement("a"); a.href=resultUrl;
+  const name=$("outName").value.trim().replace(/[^\w\-]+/g,"-")||"clearcut-output";
+  a.download=name+".png"; document.body.appendChild(a); a.click(); a.remove();
+});
+$("quality").addEventListener("input",e=>{
+  const labels={1:"Smaller",2:"Balanced",3:"Original"};
+  $("qualityLabel").textContent=labels[e.target.value];
+  // Reserved integration point: use this setting to resize/compress before API upload.
+});
+const drop=$("drop");
+["dragenter","dragover"].forEach(evt=>drop.addEventListener(evt,e=>{e.preventDefault();drop.classList.add("drag")}));
+["dragleave","drop"].forEach(evt=>drop.addEventListener(evt,e=>{e.preventDefault();drop.classList.remove("drag")}));
+drop.addEventListener("drop",e=>loadImage(e.dataTransfer.files[0]));
+</script>
+</body>
+</html>
