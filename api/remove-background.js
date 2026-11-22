@@ -177,5 +177,13 @@ module.exports = async function handler(req, res) {
     return res.status(500).json({
       error: "The background-removal request failed."
     });
+    };
+}
+
+handler.config = {
+  api: {
+    bodyParser: false
   }
 };
+
+module.exports = handler;
