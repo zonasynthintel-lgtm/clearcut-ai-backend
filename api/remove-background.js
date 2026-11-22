@@ -1,13 +1,6 @@
-
 const Busboy = require("busboy");
 
-module.exports.config = {
-  api: {
-    bodyParser: false
-  }
-};
-
-module.exports = async function handler(req, res) {
+async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
@@ -51,7 +44,9 @@ module.exports = async function handler(req, res) {
 
         const chunks = [];
 
-        stream.on("data", chunk => chunks.push(chunk));
+        stream.on("data", chunk => {
+          chunks.push(chunk);
+        });
 
         stream.on("limit", () => {
           tooLarge = true;
@@ -174,10 +169,12 @@ module.exports = async function handler(req, res) {
       });
     }
 
+    console.error("Background removal error:", error);
+
     return res.status(500).json({
       error: "The background-removal request failed."
     });
-    };
+  }
 }
 
 handler.config = {
