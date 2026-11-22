@@ -164,7 +164,10 @@ footer{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:
     </div>
 
     <div class="progress" id="progress">
-      <div class="progressrow"><span id="progressText">Preparing image…</span><span id="progressPercent">—</span></div>
+      <div class="progressrow">
+        <span id="progressText">Preparing AI engine…</span>
+        <span id="progressPercent">Working</span>
+      </div>
       <div class="bar"><span id="progressBar"></span></div>
     </div>
 
@@ -175,22 +178,35 @@ footer{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:
       <button class="secondary" id="downloadBtn" disabled>↓ Download PNG</button>
     </div>
 
-    <div class="hint">Images are sent to the background-removal service for processing. An internet connection is required.</div>
+    <div class="hint">Your image is processed in your browser. It is not uploaded to the background-removal provider.</div>
   </div>
 </section>
 
 <aside class="side">
   <section class="panel">
-    <div class="panelhead"><div><h2>Designed for your workflow</h2><div class="sub">Clean tools, no clutter</div></div></div>
+    <div class="panelhead">
+      <div><h2>Designed for your workflow</h2><div class="sub">Clean tools, no clutter</div></div>
+    </div>
     <div class="sidebody">
-      <div class="feature"><div class="featicon">◇</div><div><strong>Transparent output</strong><p>Download clean PNG images with transparent backgrounds.</p></div></div>
-      <div class="feature"><div class="featicon">⚡</div><div><strong>Remote AI processing</strong><p>Image processing happens on a remote AI service, not on your phone.</p></div></div>
-      <div class="feature"><div class="featicon">↓</div><div><strong>Easy download</strong><p>Save your finished transparent image to your device.</p></div></div>
+      <div class="feature">
+        <div class="featicon">◇</div>
+        <div><strong>Transparent output</strong><p>Download clean PNG images with transparent backgrounds.</p></div>
+      </div>
+      <div class="feature">
+        <div class="featicon">⚡</div>
+        <div><strong>On-device AI</strong><p>Background removal runs on your device using browser-based AI.</p></div>
+      </div>
+      <div class="feature">
+        <div class="featicon">↓</div>
+        <div><strong>Easy download</strong><p>Save your finished transparent image to your device.</p></div>
+      </div>
     </div>
   </section>
 
   <section class="panel">
-    <div class="panelhead"><div><h2>Export settings</h2><div class="sub">Your preferred output</div></div></div>
+    <div class="panelhead">
+      <div><h2>Export settings</h2><div class="sub">Your preferred output</div></div>
+    </div>
     <div class="sidebody">
       <div class="setting">
         <label>File format <span>PNG</span></label>
@@ -204,10 +220,14 @@ footer{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:
   </section>
 
   <section class="panel">
-    <div class="panelhead"><div><h2>AI service status</h2><div class="sub">Remote processing service</div></div></div>
+    <div class="panelhead">
+      <div><h2>AI engine status</h2><div class="sub">Browser-based processing</div></div>
+    </div>
     <div class="sidebody">
-      <div class="status" id="backendStatus">Remote AI service · Not tested</div>
-      <p class="sub" style="margin:10px 0 0">Free service allowance: up to 100 images per day per IP. The service is in beta and may occasionally be unavailable.</p>
+      <div class="status" id="backendStatus">JavaScript SDK · Waiting</div>
+      <p class="sub" style="margin:10px 0 0">
+        The AI model downloads when you first process an image. A stable internet connection is required for the initial download.
+      </p>
     </div>
   </section>
 </aside>
@@ -219,12 +239,14 @@ footer{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:
 </footer>
 </div>
 
+<!-- BgRemove browser SDK -->
+<script src="https://bgremovers.org/sdk/v1.js"></script>
+
 <script>
 "use strict";
 
-// CLEARCUT AI — REMOTE BACKGROUND REMOVAL
+// CLEARCUT AI — BROWSER-BASED BACKGROUND REMOVAL
 
-const API_URL = "https://bgremovers.org/api/v1/remove-background";
 const $ = id => document.getElementById(id);
 
 let selectedFile = null;
@@ -250,6 +272,31 @@ function showProgress(message) {
   $("progressBar").classList.add("indeterminate");
 }
 
+function updateProgress(info) {
+  if(!info) return;
+
+  const stages = {
+    "loading-runtime": "Preparing AI engine…",
+    "loading-model": "Loading AI model…",
+    "downloading": "Downloading AI model…",
+    "ready": "AI engine ready. Processing image…"
+  };
+
+  if(info.stage && stages[info.stage]) {
+    $("progressText").textContent = stages[info.stage];
+  }
+
+  if(typeof info.progress === "number") {
+    const percent = Math.max(0, Math.min(100, Math.round(info.progress * 100)));
+    $("progressPercent").textContent = percent + "%";
+    $("progressBar").classList.remove("indeterminate");
+    $("progressBar").style.width = percent + "%";
+  } else {
+    $("progressPercent").textContent = "Working";
+    $("progressBar").classList.add("indeterminate");
+  }
+}
+
 function hideProgress() {
   $("progress").classList.remove("show");
   $("progressBar").classList.remove("indeterminate");
@@ -265,6 +312,7 @@ function resetResult() {
 
 function clearImage() {
   if(busy) return;
+
   if(originalUrl) URL.revokeObjectURL(originalUrl);
 
   originalUrl = null;
@@ -279,6 +327,7 @@ function clearImage() {
 
   hideProgress();
   setStatus("Ready. Select an image to begin.");
+  $("backendStatus").textContent = "JavaScript SDK · Waiting";
 }
 
 function loadImage(file) {
@@ -313,119 +362,64 @@ function loadImage(file) {
   setStatus("Image loaded. Ready for background removal.", "success");
 }
 
-async function requestBackgroundRemoval(file) {
-  const formData = new FormData();
-  formData.append("image", file, file.name);
-
-  let response;
-
-  // Retry once if the provider reports a temporary upstream failure.
-  for(let attempt = 1; attempt <= 2; attempt++) {
-    showProgress(attempt === 1
-      ? "Uploading image and processing with AI…"
-      : "Retrying temporary service error…"
-    );
-
-    response = await fetch(API_URL, {
-      method: "POST",
-      body: formData
-    });
-
-    if(response.status !== 502 || attempt === 2) break;
-    await new Promise(resolve => setTimeout(resolve, 1800));
-  }
-
-  if(!response.ok) {
-    let message = "The background-removal service could not process this image.";
-
-    try {
-      const data = await response.json();
-      message = data?.error?.message || data?.error?.code || data?.message || message;
-    } catch(_) {
-      // Keep the default message if the server did not return JSON.
-    }
-
-    if(response.status === 429) {
-      throw new Error("The free daily request limit has been reached. Please try again after the limit resets.");
-    }
-
-    if(response.status === 413) {
-      throw new Error("The image is too large. Please choose an image below 10 MB.");
-    }
-
-    if(response.status === 502) {
-      throw new Error("The AI provider is temporarily unavailable. Please try again later.");
-    }
-
-    throw new Error(message + " (HTTP " + response.status + ")");
-  }
-
-  const contentType = response.headers.get("content-type") || "";
-
-  if(!contentType.includes("image")) {
-    throw new Error("The service returned an unexpected response instead of a PNG image.");
-  }
-
-  const remaining = response.headers.get("X-RateLimit-Remaining");
-  return {
-    blob: await response.blob(),
-    remaining
-  };
-}
-
 async function runBackgroundRemoval() {
   if(!selectedFile || busy) return;
+
+  if(!window.BgRemove || typeof window.BgRemove.removeBackground !== "function") {
+    setStatus(
+      "The AI engine could not be loaded. Check your internet connection, refresh the page, and try again.",
+      "error"
+    );
+    $("backendStatus").textContent = "JavaScript SDK · Not loaded";
+    return;
+  }
 
   busy = true;
   $("removeBtn").disabled = true;
   $("downloadBtn").disabled = true;
-  $("backendStatus").textContent = "Remote AI service · Processing";
+  $("backendStatus").textContent = "JavaScript SDK · Loading";
 
-  setStatus("Sending your image for background removal. Please wait…");
-  showProgress("Connecting to AI service…");
+  setStatus("Preparing the AI engine. The first use may take longer while the model downloads.");
+  showProgress("Loading AI engine…");
 
   try {
-    const result = await requestBackgroundRemoval(selectedFile);
+    const resultBlob = await window.BgRemove.removeBackground(selectedFile, {
+      maxDimension: 4096,
+      onProgress: updateProgress
+    });
 
-    if(!(result.blob instanceof Blob) || result.blob.size === 0) {
-      throw new Error("The service returned an empty image.");
+    if(!(resultBlob instanceof Blob) || resultBlob.size === 0) {
+      throw new Error("The AI engine returned an empty image. Please try again.");
     }
 
-    if(!result.blob.type.includes("image")) {
-      throw new Error("The returned file is not a valid image.");
+    if(!resultBlob.type.includes("image")) {
+      throw new Error("The AI engine returned an unsupported image format.");
     }
 
     resetResult();
-    resultUrl = URL.createObjectURL(result.blob);
+    resultUrl = URL.createObjectURL(resultBlob);
 
     $("previewImg").src = resultUrl;
     $("previewlabel").textContent = "Background removed";
     $("downloadBtn").disabled = false;
 
     hideProgress();
-
-    let message = "Background removed successfully!";
-    if(result.remaining !== null) {
-      message += " Free requests remaining today: " + result.remaining + ".";
-    }
-
-    setStatus(message, "success");
-    $("backendStatus").textContent = "Remote AI service · Ready";
+    setStatus("Background removed successfully! Your transparent PNG is ready.", "success");
+    $("backendStatus").textContent = "JavaScript SDK · Ready";
 
   } catch(error) {
     console.error("ClearCut AI error:", error);
     hideProgress();
 
-    $("backendStatus").textContent = "Remote AI service · Error";
+    $("backendStatus").textContent = "JavaScript SDK · Error";
 
-    if(error instanceof TypeError) {
-      setStatus(
-        "Could not connect to the service. Check your internet connection. If the problem continues, the service may not allow browser requests.",
-        "error"
-      );
-    } else {
-      setStatus(error.message || "Could not process this image.", "error");
+    let message = error?.message || "Could not process this image.";
+
+    if(message.length > 350) {
+      message = "The AI engine could not finish processing. Try a smaller image or refresh the page.";
     }
+
+    setStatus(message, "error");
 
   } finally {
     busy = false;
@@ -473,6 +467,7 @@ const drop = $("drop");
 drop.addEventListener("drop", event => {
   loadImage(event.dataTransfer.files[0]);
 });
+
 </script>
 </body>
 </html>
